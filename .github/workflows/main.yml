@@ -1,0 +1,64 @@
+name: Build Cairo Library
+on:
+  release:
+    types: [published]
+  push:
+    tags:
+        - 1.**
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v3
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+    - name: Build
+      run: |
+        msbuild cairo-win.sln -target:cairo /P:Configuration="Debug Dll" /p:Platform="x64"
+        msbuild cairo-win.sln -target:cairo /P:Configuration="Debug lib" /p:Platform="x64"
+        msbuild cairo-win.sln -target:cairo /P:Configuration="Release Dll" /p:Platform="x64"
+        msbuild cairo-win.sln -target:cairo /P:Configuration="Release lib" /p:Platform="x64"
+    - name: Prepare Release
+      run: |
+        mkdir build\include
+        mkdir build\lib
+        mkdir build\bin
+        xcopy "x64\Debug dll\cairod.dll" build\bin\
+        xcopy "x64\Debug dll\cairod.pdb" build\bin\
+        xcopy "x64\Debug dll\cairodlld.lib" build\lib\
+        xcopy "x64\Release dll\cairo.dll" build\bin\
+        xcopy "x64\Release dll\cairo.pdb" build\bin\
+        xcopy "x64\Release dll\cairodll.lib" build\lib\
+        xcopy "x64\Debug lib\cairod.lib" build\lib\
+        xcopy "x64\Debug lib\pixmand.lib" build\lib\
+        xcopy "x64\Debug lib\freetyped.lib" build\lib\
+        xcopy "x64\Debug lib\libpngd.lib" build\lib\
+        xcopy "x64\Debug lib\zlibd.lib" build\lib\
+        xcopy "x64\Release lib\cairo.lib" build\lib\
+        xcopy "x64\Release lib\pixman.lib" build\lib\
+        xcopy "x64\Release lib\freetype.lib" build\lib\
+        xcopy "x64\Release lib\libpng.lib" build\lib\
+        xcopy "x64\Release lib\zlib.lib" build\lib\
+        xcopy packages\cairo\src\cairo.h build\include
+        xcopy packages\cairo\src\cairo-deprecated.h build\include
+        xcopy packages\cairo\src\cairo-dwrite.h build\include
+        xcopy vs-projects\cairo\cairo-features.h build\include
+        xcopy packages\cairo\src\cairo-ft.h build\include
+        xcopy packages\cairo\util\cairo-gobject\cairo-gobject.h build\include
+        xcopy packages\cairo\src\cairo-pdf.h build\include
+        xcopy packages\cairo\src\cairo-ps.h build\include
+        xcopy packages\cairo\src\cairo-script.h build\include
+        xcopy packages\cairo\util\cairo-script\cairo-script-interpreter.h build\include
+        xcopy packages\cairo\src\cairo-svg.h build\include
+        xcopy packages\cairo\src\cairo-tee.h build\include
+        xcopy packages\cairo\src\cairo-version.h build\include
+        xcopy packages\cairo\src\cairo-win32.h build\include
+        Compress-Archive -Path build/* -Destination cairo-1.18.4.zip
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          *.zip
