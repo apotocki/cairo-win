@@ -7,6 +7,8 @@ This repository contains project and solution files for building the **Cairo** g
 - Builds both **static** and **dynamic** libraries
 - Supports **Debug** and **Release** configurations
 - Compatible with **x86** and **x64** architectures
+- Includes a fix for a memory leak related to `__cairo_win32_device` ([issue #19](https://gitlab.freedesktop.org/cairo/cairo/-/issues/19))
+- Adds an additional function `void pixman_reset_static_data(void);` to clean up static Pixman data
 
 ## Dependencies and Versions
 
@@ -34,6 +36,18 @@ The source code for Cairo and its dependencies is copied into the `packages` fol
 2. Open the provided Visual Studio solution (`.sln` file).
 3. Select your desired **configuration** (Debug/Release) and **platform** (x86/x64).
 4. Build the solution.
+
+## Additional Fixes and Features
+
+### Memory Leak Fix
+This build includes a fix for a **memory leak** related to `__cairo_win32_device`. More details can be found in [issue #19](https://gitlab.freedesktop.org/cairo/cairo/-/issues/19).
+
+### `pixman_reset_static_data(void)`
+An additional function `void pixman_reset_static_data(void);` has been introduced, which can be called alongside `cairo_debug_reset_static_data()` to clean up static Pixman data. Note that `pixman_reset_static_data` is **not declared in a header**, so users must declare it manually in their code before calling it:
+
+```cpp
+extern "C" void pixman_reset_static_data(void);
+```
 
 ## Supporting My Work
 
