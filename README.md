@@ -15,7 +15,7 @@ The source code for Cairo and its dependencies is copied into the `packages` fol
 - **Cairo**: [1.18.4](https://gitlab.freedesktop.org/cairo/cairo)
 - **Pixman**: [pixman-0.44.2](https://gitlab.freedesktop.org/pixman/pixman)
 - **FreeType**: [VER-2-13-3](https://gitlab.freedesktop.org/freetype/freetype.git)
-- **libpng**: [v1.6.47](git://git.code.sf.net/p/libpng/code)
+- **libpng**: [v1.6.47] git://git.code.sf.net/p/libpng/code
 - **zlib**: [v1.3.1](https://github.com/madler/zlib)
 
 ## Getting Started
